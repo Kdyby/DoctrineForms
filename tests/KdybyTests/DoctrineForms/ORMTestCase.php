@@ -13,6 +13,7 @@ namespace KdybyTests\DoctrineForms;
 use Doctrine\ORM\Tools\SchemaTool;
 use Kdyby;
 use Nette;
+use Nette\Application\UI;
 use Nette\PhpGenerator as Code;
 use Tester;
 
@@ -70,6 +71,69 @@ abstract class ORMTestCase extends Tester\TestCase
 	protected function newInstance($className, $props = array())
 	{
 		return Code\Helpers::createObject($className, $props);
+	}
+
+
+
+	/**
+	 * @param UI\Form $form
+	 * @param array $data
+	 * @return PresenterMock
+	 */
+	protected function attachToPresenter(UI\Form $form, $data = array())
+	{
+		$presenter = new PresenterMock();
+		$this->serviceLocator->callMethod(array($presenter, 'injectPrimary'));
+
+		if (!empty($data)) {
+			$request = new Nette\Application\Request('fake', 'POST', array('do' => 'form-submit'), array('do' => 'form-submit') + $data);
+
+		} else {
+			$request = new Nette\Application\Request('fake', 'POST', array());
+		}
+
+		$presenter->run($request);
+		$presenter['form'] = $form;
+
+		return $presenter;
+	}
+
+
+
+	/**
+	 * @return UI\Form|Kdyby\DoctrineForms\EntityForm
+	 */
+	protected static function buildEntityForm()
+	{
+		$class = __NAMESPACE__ . '\\EntityForm';
+		if (class_exists($class, FALSE)) {
+			return new $class();
+		}
+
+		if (PHP_VERSION_ID >= 50400) {
+			eval('namespace ' . __NAMESPACE__ . ' { class EntityForm extends \Nette\Application\UI\Form { use \Kdyby\DoctrineForms\EntityForm; } }');
+
+		} else {
+			$trait = file_get_contents(__DIR__ . '/../../../src/Kdyby/DoctrineForms/EntityForm.php');
+			$trait = str_replace('namespace Kdyby\DoctrineForms;', 'namespace ' . __NAMESPACE__ . ';', $trait);
+			$trait = str_replace("use Kdyby;", "use Kdyby;\n" . 'use Kdyby\DoctrineForms\EntityFormMapper;', $trait);
+			$trait = str_replace("trait EntityForm", 'class EntityForm extends UI\Form', $trait);
+			eval(substr($trait, 5));
+		}
+
+		return new $class();
+	}
+
+}
+
+
+
+class PresenterMock extends UI\Presenter
+{
+
+	protected function startup()
+	{
+		$this->terminate();
 	}
 
 }
