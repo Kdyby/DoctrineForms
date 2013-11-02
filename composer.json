@@ -2,7 +2,7 @@
 	"name": "kdyby/doctrine-forms",
 	"type": "library",
 	"description": "Forms mapping and validation for Kdyby/Doctrine integration into Nette Framework",
-	"keywords": ["nette", "kdyby", "doctrine", "orm", "dbal", "forms", "validation", "mapping"],
+	"keywords": ["nette", "kdyby", "doctrine", "forms", "validation", "mapping"],
 	"homepage": "http://kdyby.org",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
