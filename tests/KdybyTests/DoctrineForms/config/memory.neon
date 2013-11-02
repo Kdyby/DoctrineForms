@@ -1,0 +1,5 @@
+doctrine:
+	driver: pdo_sqlite
+	memory: true
+	metadata:
+		KdybyTests\DoctrineForms: annotations(%appDir%/KdybyTests/DoctrineForms/models)

@@ -8,6 +8,7 @@ extensions:
 	annotations: Kdyby\Annotations\DI\AnnotationsExtension
 	doctrine: Kdyby\Doctrine\DI\OrmExtension
 	validator: Kdyby\Validator\DI\ValidatorExtension
+	translation: Kdyby\Translation\DI\TranslationExtension
 	doctrineForms: Kdyby\DoctrineForms\DI\FormsExtension
 
 
@@ -16,8 +17,6 @@ doctrine:
 	queryCache: array
 	resultCache: array
 	hydrationCache: array
-	metadata:
-		KdybyTests\Doctrine: annotations(%appDir%/Doctrine/models)
 
 
 console:

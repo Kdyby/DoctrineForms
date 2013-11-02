@@ -38,7 +38,7 @@ class FormsExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition($this->prefix('entityFormMapper'))
-			->setClass('Kdyby\Doctrine\Forms\EntityFormMapper')
+			->setClass('Kdyby\DoctrineForms\EntityFormMapper')
 			->setInject(FALSE);
 	}
 

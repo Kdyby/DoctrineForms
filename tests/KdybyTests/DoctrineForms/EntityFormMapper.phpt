@@ -13,17 +13,13 @@ namespace KdybyTests\DoctrineForms;
 use Kdyby;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Kdyby\DoctrineForms\IComponentMapper;
-use KdybyTests\Doctrine\CmsAddress;
-use KdybyTests\Doctrine\CmsArticle;
-use KdybyTests\Doctrine\CmsGroup;
-use KdybyTests\Doctrine\CmsUser;
-use KdybyTests\ORMTestCase;
 use Nette;
 use Nette\Application\UI;
 use Tester;
 use Tester\Assert;
 
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/models/cms.php';
 
 
 
@@ -121,7 +117,7 @@ class EntityFormMapperTest extends ORMTestCase
 		$form = self::buildEntityForm();
 		$form->injectEntityMapper($this->mapper);
 		$em = $this->mapper->getEntityManager();
-		$usersDao = $em->getDao('KdybyTests\\Doctrine\\CmsUser');
+		$usersDao = $em->getDao(__NAMESPACE__ . '\\CmsUser');
 
 		$usersDao->save(array(
 			new CmsUser('DG'),

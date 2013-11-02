@@ -13,8 +13,6 @@ if ((!$loader = @include __DIR__ . '/../../vendor/autoload.php') && (!$loader = 
 	exit(1);
 }
 $loader->add('KdybyTests', __DIR__ . '/../');
-$loader->add('KdybyTests', __DIR__ . '/../../../doctrine/tests');
-$loader->add('KdybyTests', __DIR__ . '/../../vendor/kdyby/doctrine/tests');
 
 // configure environment
 Tester\Helpers::setup();
