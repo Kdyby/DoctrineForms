@@ -17,7 +17,7 @@
 	},
 	"require": {
 		"nette/nette": "@dev",
-		"kdyby/doctrine": "@dev",
+		"kdyby/doctrine": "~1.0@dev",
 		"kdyby/validator": "@dev",
 		"symfony/property-access": "~2.3"
 	},
