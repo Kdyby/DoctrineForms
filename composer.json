@@ -18,7 +18,8 @@
 	"require": {
 		"nette/nette": "@dev",
 		"kdyby/doctrine": "@dev",
-		"kdyby/validator": "@dev"
+		"kdyby/validator": "@dev",
+		"symfony/property-access": "~2.3"
 	},
 	"require-dev": {
 		"nette/tester": "@dev"
