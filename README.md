@@ -30,8 +30,8 @@ But if you're using development version of Nette, you have to specify the develo
 	"kdyby/doctrine-cache": "@dev",
 	"kdyby/events": "@dev",
 	"kdyby/console": "@dev",
-	"kdyby/doctrine": "@dev"
-	"kdyby/validator": "@dev"
+	"kdyby/doctrine": "@dev",
+	"kdyby/validator": "@dev",
 	"kdyby/doctrine-forms": "@dev"
 }
 ```
