@@ -12,6 +12,8 @@ namespace KdybyTests\DoctrineForms;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 /**
@@ -92,6 +94,8 @@ class CmsArticle
 	public $id;
 
 	/**
+	 * @Assert\NotNull()
+	 * @Assert\Length(min=5)
 	 * @ORM\Column(type="string", length=255)
 	 */
 	public $topic;

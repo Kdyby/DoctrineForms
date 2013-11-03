@@ -31,6 +31,11 @@ trait EntityForm
 	private $entityMapper;
 
 	/**
+	 * @var ConstraintViolationsMapper
+	 */
+	private $violationsMapper;
+
+	/**
 	 * @var object
 	 */
 	private $entity;
@@ -51,12 +56,24 @@ trait EntityForm
 
 
 	/**
-	 * @param EntityFormMapper $entityMapper
+	 * @param EntityFormMapper $mapper
 	 * @return EntityForm|UI\Form
 	 */
-	public function injectEntityMapper(EntityFormMapper $entityMapper)
+	public function injectEntityMapper(EntityFormMapper $mapper)
 	{
-		$this->entityMapper = $entityMapper;
+		$this->entityMapper = $mapper;
+		return $this;
+	}
+
+
+
+	/**
+	 * @param ConstraintViolationsMapper $mapper
+	 * @return EntityForm|UI\Form
+	 */
+	public function injectValidator(ConstraintViolationsMapper $mapper)
+	{
+		$this->violationsMapper = $mapper;
 		return $this;
 	}
 
@@ -125,6 +142,10 @@ trait EntityForm
 
 		if ($this->entity && $this->isSubmitted() && $this->isValid()) {
 			$this->getEntityMapper()->save($this->entity, $this);
+
+			if ($this->violationsMapper) {
+				$this->violationsMapper->validate($this, $this->entity);
+			}
 		}
 	}
 
