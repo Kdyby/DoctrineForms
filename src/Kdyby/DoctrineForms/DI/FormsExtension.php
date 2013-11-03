@@ -40,6 +40,10 @@ class FormsExtension extends Nette\DI\CompilerExtension
 		$builder->addDefinition($this->prefix('entityFormMapper'))
 			->setClass('Kdyby\DoctrineForms\EntityFormMapper')
 			->setInject(FALSE);
+
+		$builder->addDefinition($this->prefix('constraintViolationsMapper'))
+			->setClass('Kdyby\DoctrineForms\ConstraintViolationsMapper')
+			->setInject(FALSE);
 	}
 
 
