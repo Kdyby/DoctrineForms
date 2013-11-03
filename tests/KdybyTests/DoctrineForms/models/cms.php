@@ -95,7 +95,6 @@ class CmsArticle
 
 	/**
 	 * @Assert\NotNull()
-	 * @Assert\Length(min=5)
 	 * @ORM\Column(type="string", length=255)
 	 */
 	public $topic;
@@ -319,6 +318,7 @@ class CmsUser
 	public $status;
 
 	/**
+	 * @Assert\NotBlank()
 	 * @ORM\Column(type="string", length=255, unique=true)
 	 */
 	public $username;

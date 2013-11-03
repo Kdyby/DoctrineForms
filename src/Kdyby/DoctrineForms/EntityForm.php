@@ -144,7 +144,7 @@ trait EntityForm
 			$this->getEntityMapper()->save($this->entity, $this);
 
 			if ($this->violationsMapper) {
-				$this->violationsMapper->validate($this, $this->entity);
+				$this->violationsMapper->validateContainer($this, $this->entity);
 			}
 		}
 	}

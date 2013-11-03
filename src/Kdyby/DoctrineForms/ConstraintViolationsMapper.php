@@ -13,6 +13,7 @@ namespace Kdyby\DoctrineForms;
 use Kdyby;
 use Nette;
 use Nette\Application\UI;
+use Nette\Forms\Container;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
@@ -36,18 +37,35 @@ class ConstraintViolationsMapper extends Nette\Object
 	 */
 	private $translator;
 
+	/**
+	 * @var \Kdyby\Doctrine\EntityManager
+	 */
+	private $em;
 
 
-	public function __construct(ValidatorInterface $validator, Kdyby\Translation\Translator $translator)
+
+	public function __construct(ValidatorInterface $validator, Kdyby\Translation\Translator $translator, Kdyby\Doctrine\EntityManager $entityManager)
 	{
 		$this->validator = $validator;
 		$this->translator = $translator;
+		$this->em = $entityManager;
 	}
 
 
 
-	public function validate(UI\Form $form, $entity)
+	/**
+	 * @param Container $container
+	 * @param object $entity
+	 * @return \Symfony\Component\Validator\ConstraintViolationInterface[]|ConstraintViolationList
+	 */
+	public function validateContainer(Container $container, $entity)
 	{
+		if ($entity === NULL) {
+			return;
+		}
+
+		$meta = $this->em->getClassMetadata(get_class($entity));
+
 		$groups = NULL;
 		if ($entity instanceof GroupSequenceProviderInterface) {
 			$groups = $entity->getGroupSequence();
@@ -55,30 +73,58 @@ class ConstraintViolationsMapper extends Nette\Object
 
 		/** @var ConstraintViolationList|ConstraintViolationInterface[] $violations */
 		$violations = $this->validator->validate($entity, $groups);
-		if (count($violations) === 0) {
-			return;
-		}
+		$this->mapViolationsToForm($container, $violations);
 
-		foreach ($violations as $violation) {
-			$control = $this->findControl($form, $violation);
-			$control->addError($this->translator->translate($violation->getMessageTemplate(), $violation->getMessagePluralization(), $violation->getMessageParameters(), 'validators'));
+		foreach ($container->getComponents(FALSE, 'Nette\Forms\Container') as $child) {
+			/** @var Nette\Forms\Container $child */
+			if (!$meta->hasAssociation($field = $child->getName())) {
+				continue;
+			}
+
+			if ($meta->isSingleValuedAssociation($field)) {
+				$this->validateContainer($child, $meta->getFieldValue($entity, $field));
+
+			} else {
+				throw new NotImplementedException("To many relation is not yet implemented");
+			}
 		}
 	}
 
 
 
 	/**
-	 * @param UI\Form $form
+	 * @param \Nette\Forms\Container $container
+	 * @param ConstraintViolationList|ConstraintViolationInterface[] $violations
+	 */
+	public function mapViolationsToForm(Container $container, ConstraintViolationList $violations)
+	{
+		foreach ($violations as $violation) {
+			$control = $this->findControl($container, $violation);
+			$control->addError($this->translator->translate($violation->getMessageTemplate(), $violation->getMessagePluralization(), $violation->getMessageParameters(), 'validators'));
+		}
+	}
+
+
+
+	public function buildClientSideValidations(UI\Form $form, $entity)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * @param Container $container
 	 * @param ConstraintViolationInterface $violation
 	 * @return Nette\Forms\IControl|Nette\Forms\Controls\BaseControl|UI\Form
 	 */
-	private function findControl(UI\Form $form, ConstraintViolationInterface $violation)
+	private function findControl(Container $container, ConstraintViolationInterface $violation)
 	{
 		if (!$m = Nette\Utils\Strings::split('.' . $violation->getPropertyPath(), '~([\\.\\[])~')) {
-			return $form; // apply the error to form
+			return $container->getForm(); // apply the error to form
 		}
 
-		$control = $form;
+		$control = $container;
 		while (($type = array_shift($m)) !== NULL && $control) {
 			if (empty($type)) {
 				continue;
@@ -92,7 +138,7 @@ class ConstraintViolationsMapper extends Nette\Object
 			$control = $control->getComponent($step, FALSE);
 		}
 
-		return $control instanceof Nette\Forms\IControl ? $control : $form;
+		return $control instanceof Nette\Forms\IControl ? $control : $container->getForm();
 	}
 
 }

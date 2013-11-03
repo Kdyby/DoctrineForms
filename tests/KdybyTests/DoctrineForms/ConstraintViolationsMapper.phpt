@@ -35,7 +35,7 @@ class ConstraintViolationsMapperTest extends ORMTestCase
 
 	protected function setUp()
 	{
-		$this->createMemoryManager();
+		$em = $this->createMemoryManager();
 
 		/** @var \Symfony\Component\Validator\ValidatorInterface $validator */
 		$validator = $this->serviceLocator->getByType('Symfony\Component\Validator\ValidatorInterface');
@@ -44,7 +44,7 @@ class ConstraintViolationsMapperTest extends ORMTestCase
 		$translator = $this->serviceLocator->getByType('Kdyby\Translation\Translator');
 		$translator->setLocale('cs');
 
-		$this->mapper = new ConstraintViolationsMapper($validator, $translator);
+		$this->mapper = new ConstraintViolationsMapper($validator, $translator, $em);
 	}
 
 
@@ -56,16 +56,38 @@ class ConstraintViolationsMapperTest extends ORMTestCase
 
 		$article = new CmsArticle();
 
-		$this->mapper->validate($form, $article);
+		$this->mapper->validateContainer($form, $article);
+
+		Tester\Assert::same(array(), $form->getErrors());
 
 		Tester\Assert::same(array(
 			'Tato hodnota nesmí být null.'
-		), $form->getAllErrors());
+		), $form['topic']->getErrors());
+	}
+
+
+
+	public function testValidate_toOne()
+	{
+		$form = new UI\Form;
+		$form->addText('topic');
+		$userContainer = $form->addContainer('user');
+		$userContainer->addText('username');
+
+		$article = new CmsArticle();
+		$article->user = new CmsUser();
+
+		$this->mapper->validateContainer($form, $article);
+
+		Tester\Assert::same(array(), $form->getErrors());
 
 		Tester\Assert::same(array(
 			'Tato hodnota nesmí být null.'
 		), $form['topic']->getErrors());
 
+		Tester\Assert::same(array(
+			'Tato hodnota nesmí být prázdná.'
+		), $userContainer['username']->getErrors());
 	}
 
 }

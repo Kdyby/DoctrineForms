@@ -41,3 +41,13 @@ class InvalidArgumentException extends \InvalidArgumentException implements Exce
 {
 
 }
+
+
+
+/**
+ * The exception that is thrown when a requested method or operation is not implemented.
+ */
+class NotImplementedException extends \LogicException implements Exception
+{
+
+}
