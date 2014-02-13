@@ -10,8 +10,8 @@
 
 namespace Kdyby\DoctrineForms;
 
+use Doctrine\ORM\EntityManager;
 use Kdyby;
-use Kdyby\Doctrine\EntityManager;
 use Nette;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\BaseControl;
@@ -76,7 +76,7 @@ class EntityFormMapper extends Nette\Object
 
 
 	/**
-	 * @return \Kdyby\Doctrine\EntityManager
+	 * @return \Doctrine\ORM\EntityManager|\Kdyby\Doctrine\EntityManager
 	 */
 	public function getEntityManager()
 	{

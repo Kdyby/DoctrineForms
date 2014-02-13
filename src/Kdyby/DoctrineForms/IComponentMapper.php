@@ -11,7 +11,7 @@
 namespace Kdyby\DoctrineForms;
 
 use Kdyby;
-use Kdyby\Doctrine\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Nette;
 use Nette\ComponentModel\Component;
 
@@ -26,6 +26,7 @@ interface IComponentMapper
 	const FIELD_NAME = 'field.name';
 	const ITEMS_TITLE = 'items.title';
 	const ITEMS_FILTER = 'items.filter';
+	const ITEMS_ORDER = 'items.order';
 
 
 

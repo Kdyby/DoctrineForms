@@ -11,7 +11,7 @@
 namespace Kdyby\DoctrineForms;
 
 use Kdyby;
-use Kdyby\Doctrine\EntityManager;
+use Doctrine\ORM\EntityManager;
 use Nette;
 use Nette\Application\UI;
 
@@ -91,7 +91,7 @@ trait EntityForm
 			$presenter = $this->lookup('Nette\Application\UI\Presenter');
 
 			/** @var EntityManager $em */
-			$em = $presenter->getContext()->getByType('Kdyby\Doctrine\EntityManager');
+			$em = $presenter->getContext()->getByType('Doctrine\ORM\EntityManager');
 
 			$this->entityMapper = new EntityFormMapper($em);
 		}

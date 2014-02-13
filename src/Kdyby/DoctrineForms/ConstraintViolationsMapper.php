@@ -10,6 +10,7 @@
 
 namespace Kdyby\DoctrineForms;
 
+use Doctrine;
 use Kdyby;
 use Nette;
 use Nette\Application\UI;
@@ -38,13 +39,13 @@ class ConstraintViolationsMapper extends Nette\Object
 	private $translator;
 
 	/**
-	 * @var \Kdyby\Doctrine\EntityManager
+	 * @var Doctrine\ORM\EntityManager
 	 */
 	private $em;
 
 
 
-	public function __construct(ValidatorInterface $validator, Kdyby\Translation\Translator $translator, Kdyby\Doctrine\EntityManager $entityManager)
+	public function __construct(ValidatorInterface $validator, Kdyby\Translation\Translator $translator, Doctrine\ORM\EntityManager $entityManager)
 	{
 		$this->validator = $validator;
 		$this->translator = $translator;

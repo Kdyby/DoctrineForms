@@ -10,15 +10,17 @@
 
 namespace Kdyby\DoctrineForms\Controls;
 
+use Doctrine\ORM\EntityManager;
 use Kdyby;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Kdyby\DoctrineForms\IComponentMapper;
-use Kdyby\Doctrine\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Nette;
 use Nette\ComponentModel\Component;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\RadioList;
 use Nette\Forms\Controls\SelectBox;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 
 
@@ -33,11 +35,23 @@ class TextControl extends Nette\Object implements IComponentMapper
 	 */
 	private $mapper;
 
+	/**
+	 * @var PropertyAccessor
+	 */
+	private $accessor;
+
+	/**
+	 * @var EntityManager
+	 */
+	private $em;
+
 
 
 	public function __construct(EntityFormMapper $mapper)
 	{
 		$this->mapper = $mapper;
+		$this->em = $this->mapper->getEntityManager();
+		$this->accessor = $mapper->getAccessor();
 	}
 
 
@@ -52,15 +66,13 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
-			$component->setValue($this->mapper->getAccessor()->getValue($entity, $name));
+			$component->setValue($this->accessor->getValue($entity, $name));
 			return TRUE;
 		}
 
 		if (!$meta->hasAssociation($name)) {
 			return FALSE;
 		}
-
-		$em = $this->mapper->getEntityManager();
 
 		/** @var SelectBox|RadioList $component */
 		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems())) {
@@ -73,21 +85,67 @@ class TextControl extends Nette\Object implements IComponentMapper
 			}
 
 			$criteria = $component->getOption(self::ITEMS_FILTER, array());
+			$orderBy = $component->getOption(self::ITEMS_ORDER, array());
 
-			$identifier = $meta->getIdentifierFieldNames();
-			$dao = $em->getDao($entity)->related($name);
-			$items = $dao->findPairs($criteria, $nameKey, reset($identifier));
-
+			$related = $this->relatedMetadata($entity, $name);
+			$items = $this->findPairs($related, $criteria, $orderBy, $nameKey);
 			$component->setItems($items);
 		}
 
-		$UoW = $em->getUnitOfWork();
-
-		if ($relation = $this->mapper->getAccessor()->getValue($entity, $name)) {
+		if ($relation = $this->accessor->getValue($entity, $name)) {
+			$UoW = $this->em->getUnitOfWork();
 			$component->setValue($UoW->getSingleIdentifierValue($relation));
 		}
 
 		return TRUE;
+	}
+
+
+
+	/**
+	 * @param string|object $entity
+	 * @param string $relationName
+	 * @return ClassMetadata|Kdyby\Doctrine\Mapping\ClassMetadata
+	 */
+	private function relatedMetadata($entity, $relationName)
+	{
+		$meta = $this->em->getClassMetadata(is_object($entity) ? get_class($entity) : $entity);
+		$targetClass = $meta->getAssociationTargetClass($relationName);
+		return $this->em->getClassMetadata($targetClass);
+	}
+
+
+
+	/**
+	 * @param ClassMetadata $meta
+	 * @param array $criteria
+	 * @param array $orderBy
+	 * @param string $nameKey
+	 * @return array
+	 */
+	private function findPairs(ClassMetadata $meta, $criteria, $orderBy, $nameKey)
+	{
+		$repository = $this->em->getRepository($meta->getName());
+		$identifier = $meta->getIdentifierFieldNames();
+
+		$qb = $repository->createQueryBuilder('e')
+			->select('e.' . ($idKey = reset($identifier)), 'e.' . $nameKey);
+
+		foreach ($criteria as $key => $value) {
+			$qb->andWhere('e.' . $key . '= :p_' . $key)
+				->setParameter('p_' . $key, $value);
+		}
+
+		foreach ($orderBy as $sort => $order) {
+			$qb->addOrderBy($sort, $order);
+		}
+
+		$items = array();
+		foreach ($qb->getQuery()->getScalarResult() as $result) {
+			$items[$result[$idKey]] = $result[$nameKey];
+		}
+
+		return $items;
 	}
 
 
@@ -102,7 +160,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
-			$this->mapper->getAccessor()->setValue($entity, $name, $component->getValue());
+			$this->accessor->setValue($entity, $name, $component->getValue());
 			return TRUE;
 		}
 
@@ -114,10 +172,8 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
-		$em = $this->mapper->getEntityManager();
-		$dao = $em->getDao($entity)->related($name);
-
-		if ($relation = $dao->find($identifier)) {
+		$repository = $this->em->getRepository($this->relatedMetadata($entity, $name)->getName());
+		if ($relation = $repository->find($identifier)) {
 			$meta->setFieldValue($entity, $name, $relation);
 		}
 

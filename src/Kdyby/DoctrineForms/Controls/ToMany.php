@@ -16,7 +16,7 @@ use Kdyby;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Kdyby\DoctrineForms\IComponentMapper;
 use Kdyby\DoctrineForms\ToManyContainer;
-use Kdyby\Doctrine\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Nette;
 use Nette\ComponentModel\Component;
 
