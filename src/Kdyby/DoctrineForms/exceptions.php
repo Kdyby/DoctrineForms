@@ -51,3 +51,10 @@ class NotImplementedException extends \LogicException implements Exception
 {
 
 }
+
+
+
+class UnexpectedValueException extends \UnexpectedValueException implements Exception
+{
+
+}
