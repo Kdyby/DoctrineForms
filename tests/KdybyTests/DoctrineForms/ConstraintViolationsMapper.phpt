@@ -58,10 +58,10 @@ class ConstraintViolationsMapperTest extends ORMTestCase
 
 		$this->mapper->validateContainer($form, $article);
 
-		Tester\Assert::same(array(), $form->getErrors());
+		Tester\Assert::same(array(), $form->getOwnErrors());
 
 		Tester\Assert::same(array(
-			'Tato hodnota nesmí být null.'
+			'Tato hodnota nesmí být prázdná.'
 		), $form['topic']->getErrors());
 	}
 
@@ -79,10 +79,10 @@ class ConstraintViolationsMapperTest extends ORMTestCase
 
 		$this->mapper->validateContainer($form, $article);
 
-		Tester\Assert::same(array(), $form->getErrors());
+		Tester\Assert::same(array(), $form->getOwnErrors());
 
 		Tester\Assert::same(array(
-			'Tato hodnota nesmí být null.'
+			'Tato hodnota nesmí být prázdná.'
 		), $form['topic']->getErrors());
 
 		Tester\Assert::same(array(
