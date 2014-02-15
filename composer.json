@@ -23,7 +23,8 @@
 		"symfony/property-access": "~2.3"
 	},
 	"require-dev": {
-		"nette/tester": "@dev"
+		"nette/tester": "@dev",
+		"kdyby/doctrine": "~1.1@dev"
 	},
 	"suggest": {
 		"kdyby/doctrine": "A powerful integration of Doctrine ORM into Nette Framework"
