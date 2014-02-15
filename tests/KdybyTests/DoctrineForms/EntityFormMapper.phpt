@@ -48,8 +48,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 	public function testBasic_text()
 	{
-		$form = self::buildEntityForm();
-		$form->injectEntityMapper($this->mapper);
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 
 		$name = $form->addText('name');
 
@@ -66,8 +65,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 	public function testRelation_toOne()
 	{
-		$form = self::buildEntityForm();
-		$form->injectEntityMapper($this->mapper);
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 
 		$name = $form->addText('name');
 		$addressContainer = $form->addContainer('address');
@@ -89,8 +87,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 	public function testRelation_toOne_completeRelation()
 	{
-		$form = self::buildEntityForm();
-		$form->injectEntityMapper($this->mapper);
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 
 		$name = $form->addText('name');
 		$addressContainer = $form->addContainer('address');
@@ -114,8 +111,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 	public function testRelation_toOne_itemsLoad()
 	{
-		$form = self::buildEntityForm();
-		$form->injectEntityMapper($this->mapper);
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 		$em = $this->mapper->getEntityManager();
 		$usersDao = $em->getDao(__NAMESPACE__ . '\\CmsUser');
 
@@ -143,8 +139,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 	public function testRelation_toMany()
 	{
-		$form = self::buildEntityForm();
-		$form->injectEntityMapper($this->mapper);
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 
 		$name = $form->addText('name');
 
@@ -179,8 +174,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 	public function testRename()
 	{
-		$form = self::buildEntityForm();
-		$form->injectEntityMapper($this->mapper);
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 
 		$name = $form->addCheckbox('surname')
 			->setOption(IComponentMapper::FIELD_NAME, 'name');

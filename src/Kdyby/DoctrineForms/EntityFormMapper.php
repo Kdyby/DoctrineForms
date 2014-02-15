@@ -52,8 +52,6 @@ class EntityFormMapper extends Nette\Object
 			new Controls\ToOne($this),
 			new Controls\ToMany($this),
 		);
-
-		$this->accessor = new PropertyAccessor(TRUE);
 	}
 
 
@@ -70,6 +68,10 @@ class EntityFormMapper extends Nette\Object
 	 */
 	public function getAccessor()
 	{
+		if ($this->accessor === NULL) {
+			$this->accessor = new PropertyAccessor(TRUE);
+		}
+
 		return $this->accessor;
 	}
 
