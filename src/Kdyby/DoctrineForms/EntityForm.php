@@ -13,6 +13,7 @@ namespace Kdyby\DoctrineForms;
 use Kdyby;
 use Nette;
 use Nette\Application\UI;
+use Nette\Forms\Controls\BaseControl;
 
 
 
@@ -148,6 +149,24 @@ trait EntityForm
 		$this->getEntityMapper()->load($entity, $this);
 
 		return $this;
+	}
+
+
+
+	/**
+	 * Always returns the first created field;
+	 *
+	 * @param array|string $field
+	 * @return BaseControl|UI\Form|EntityForm
+	 */
+	public function add($field)
+	{
+		/** @var EntityForm|UI\Form $this */
+
+		$fields = is_array($field) ? $field : func_get_args();
+		$this->getBuilder()->buildFields($fields);
+
+		return $this->getComponent(reset($fields));
 	}
 
 
