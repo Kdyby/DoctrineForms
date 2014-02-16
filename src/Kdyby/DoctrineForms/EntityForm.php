@@ -11,7 +11,6 @@
 namespace Kdyby\DoctrineForms;
 
 use Kdyby;
-use Doctrine\ORM\EntityManager;
 use Nette;
 use Nette\Application\UI;
 
@@ -20,7 +19,9 @@ use Nette\Application\UI;
 /**
  * @author Filip Procházka <filip@prochazka.su>
  *
- * @method \Kdyby\DoctrineForms\ToManyContainer toMany($name, $containerFactory = NULL, $entityFactory = NULL)
+ * @method ToManyContainer toMany($name, $containerFactory = NULL, $entityFactory = NULL)
+ * @method onSubmit(UI\Form $self)
+ * @method onError(UI\Form $self)
  */
 trait EntityForm
 {
@@ -36,6 +37,16 @@ trait EntityForm
 	private $violationsMapper;
 
 	/**
+	 * @var BuilderFactory
+	 */
+	private $formBuilderFactory;
+
+	/**
+	 * @var Builder\EntityBuilder
+	 */
+	private $formBuilder;
+
+	/**
 	 * @var object
 	 */
 	private $entity;
@@ -43,26 +54,27 @@ trait EntityForm
 
 
 	/**
-	 * @param EntityManager $em
-	 * @return EntityForm|UI\Form
+	 * @param EntityFormMapper $mapper
+	 * @return EntityForm|UI\Form|
 	 */
-	public function setEntityManager(EntityManager $em)
+	public function injectEntityMapper(EntityFormMapper $mapper)
 	{
-		/** @var EntityForm|UI\Form $this */
-		$this->injectEntityMapper(new EntityFormMapper($em));
+		$this->entityMapper = $mapper;
 		return $this;
 	}
 
 
 
 	/**
-	 * @param EntityFormMapper $mapper
-	 * @return EntityForm|UI\Form
+	 * @return \Kdyby\DoctrineForms\EntityFormMapper
 	 */
-	public function injectEntityMapper(EntityFormMapper $mapper)
+	public function getEntityMapper()
 	{
-		$this->entityMapper = $mapper;
-		return $this;
+		if ($this->entityMapper === NULL) {
+			$this->entityMapper = $this->getServiceLocator()->getByType('Kdyby\DoctrineForms\EntityFormMapper');
+		}
+
+		return $this->entityMapper;
 	}
 
 
@@ -80,23 +92,46 @@ trait EntityForm
 
 
 	/**
-	 * @return \Kdyby\DoctrineForms\EntityFormMapper
+	 * @return ConstraintViolationsMapper
 	 */
-	public function getEntityMapper()
+	public function getViolationsMapper()
 	{
-		/** @var EntityForm|UI\Form $this */
-
-		if ($this->entityMapper === NULL) {
-			/** @var UI\Presenter $presenter */
-			$presenter = $this->lookup('Nette\Application\UI\Presenter');
-
-			/** @var EntityManager $em */
-			$em = $presenter->getContext()->getByType('Doctrine\ORM\EntityManager');
-
-			$this->entityMapper = new EntityFormMapper($em);
+		if ($this->violationsMapper === NULL) {
+			$this->violationsMapper = $this->getServiceLocator()->getByType('Kdyby\DoctrineForms\ConstraintViolationsMapper');
 		}
 
-		return $this->entityMapper;
+		return $this->violationsMapper;
+	}
+
+
+
+	/**
+	 * @param BuilderFactory $factory
+	 * @return EntityForm|UI\Form
+	 */
+	public function injectBuilderFactory(BuilderFactory $factory)
+	{
+		$this->formBuilderFactory = $factory;
+		return $this;
+	}
+
+
+
+	/**
+	 * @return Builder\EntityBuilder
+	 */
+	public function getBuilder()
+	{
+		if ($this->formBuilder === NULL) {
+			if ($this->formBuilderFactory === NULL) {
+				$this->formBuilderFactory = $this->getServiceLocator()->getByType('Kdyby\DoctrineForms\BuilderFactory');
+			}
+
+			/** @var EntityForm|UI\Form $this */
+			$this->formBuilder = $this->formBuilderFactory->create($this);
+		}
+
+		return $this->formBuilder;
 	}
 
 
@@ -107,9 +142,9 @@ trait EntityForm
 	 */
 	public function bindEntity($entity)
 	{
-		/** @var EntityForm|UI\Form $this */
-
 		$this->entity = $entity;
+
+		/** @var EntityForm|UI\Form $this */
 		$this->getEntityMapper()->load($entity, $this);
 
 		return $this;
@@ -127,26 +162,56 @@ trait EntityForm
 
 
 
-	/**
-	 * @param Nette\ComponentModel\Container $parent
-	 */
-	protected function attached($parent)
+	public function fireEvents()
 	{
 		/** @var EntityForm|UI\Form $this */
 
-		parent::attached($parent);
-
-		if (!$parent instanceof UI\Presenter) {
+		if (!$submittedBy = $this->isSubmitted()) {
 			return;
 		}
 
-		if ($this->entity && $this->isSubmitted() && $this->isValid()) {
-			$this->getEntityMapper()->save($this->entity, $this);
+		$this->validate();
 
-			if ($this->violationsMapper) {
-				$this->violationsMapper->validateContainer($this, $this->entity);
+		if ($this->isValid()) {
+			$this->getEntityMapper()->save($this->entity, $this);
+		}
+
+		$this->getViolationsMapper()->validateContainer($this, $this->entity);
+
+		if ($submittedBy instanceof Nette\Forms\ISubmitterControl) {
+			if ($this->isValid()) {
+				$submittedBy->onClick($submittedBy);
+			} else {
+				$submittedBy->onInvalidClick($submittedBy);
 			}
 		}
+
+		if ($this->onSuccess) {
+			foreach ($this->onSuccess as $handler) {
+				if (!$this->isValid()) {
+					$this->onError($this);
+					break;
+				}
+				Nette\Utils\Callback::invoke($handler, $this);
+			}
+		} elseif (!$this->isValid()) {
+			$this->onError($this);
+		}
+		$this->onSubmit($this);
+	}
+
+
+
+	/**
+	 * @return Nette\DI\Container|\SystemContainer
+	 */
+	private function getServiceLocator()
+	{
+		/** @var EntityForm|UI\Form $this */
+		/** @var UI\Presenter $presenter */
+		$presenter = $this->lookup('Nette\Application\UI\Presenter');
+
+		return $presenter->getContext();
 	}
 
 }
