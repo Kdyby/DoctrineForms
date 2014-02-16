@@ -260,6 +260,8 @@ class EntityBuilder extends Nette\Object
 		$control = $this->controlFactory->create($this->getMetadata(), $mapping);
 		$this->container->addComponent($control, $name);
 
+		$this->mapper->load($this->entity, $control);
+
 		return $control;
 	}
 
@@ -285,7 +287,9 @@ class EntityBuilder extends Nette\Object
 	 */
 	public function relationBuilder($name)
 	{
-		if (!$this->getMetadata()->hasAssociation($name)) {
+		$class = $this->getMetadata();
+
+		if (!$class->hasAssociation($name)) {
 			throw new InvalidArgumentException("Entity {$this->metadata->name} has no association '$name'.");
 		}
 
@@ -293,13 +297,19 @@ class EntityBuilder extends Nette\Object
 			return $this->relationBuilders[$name];
 		}
 
-		if ($this->getMetadata()->isSingleValuedAssociation($name)) {
+		if ($class->isSingleValuedAssociation($name)) {
 			if (!$this->container->getComponent($name, FALSE)) {
 				$this->container->addComponent(new Nette\Forms\Container(), $name);
 			}
 
 			$builder = new EntityBuilder($this->container[$name], $this->mapper, $this->controlFactory, $this->em);
-			$builder->bindEntityType($this->getMetadata()->getAssociationTargetClass($name));
+
+			if ($this->entity && ($relation = $class->getFieldValue($this->entity, $name))) {
+				$builder->bindEntity($relation);
+
+			} else {
+				$builder->bindEntityType($class->getAssociationTargetClass($name));
+			}
 
 			return $this->relationBuilders[$name] = $builder;
 
