@@ -126,23 +126,15 @@ class TextControl extends Nette\Object implements IComponentMapper
 	private function findPairs(ClassMetadata $meta, $criteria, $orderBy, $nameKey)
 	{
 		$repository = $this->em->getRepository($meta->getName());
-		$identifier = $meta->getIdentifierFieldNames();
 
-		$qb = $repository->createQueryBuilder('e')
-			->select('e.' . ($idKey = reset($identifier)), 'e.' . $nameKey);
-
-		foreach ($criteria as $key => $value) {
-			$qb->andWhere('e.' . $key . '= :p_' . $key)
-				->setParameter('p_' . $key, $value);
-		}
-
-		foreach ($orderBy as $sort => $order) {
-			$qb->addOrderBy($sort, $order);
+		if ($repository instanceof Kdyby\Doctrine\EntityDao) {
+			return $repository->findPairs($criteria, $nameKey, $orderBy);
 		}
 
 		$items = array();
-		foreach ($qb->getQuery()->getScalarResult() as $result) {
-			$items[$result[$idKey]] = $result[$nameKey];
+		$idKey = $meta->getSingleIdentifierFieldName();
+		foreach ($repository->findBy($criteria, $orderBy) as $entity) {
+			$items[$this->accessor->getValue($entity, $idKey)] = $this->accessor->getValue($entity, $nameKey);
 		}
 
 		return $items;
