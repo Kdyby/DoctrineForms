@@ -66,7 +66,6 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
-
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
 			$component->setValue($this->accessor->getValue($entity, $name));
 			return TRUE;
@@ -91,7 +90,6 @@ class TextControl extends Nette\Object implements IComponentMapper
 
 			$related = $this->relatedMetadata($entity, $name);
 			$items = $this->findPairs($related, $criteria, $orderBy, $nameKey);
-
 			$component->setItems($items);
 		}
 
