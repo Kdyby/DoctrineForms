@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Nette;
 use Nette\ComponentModel\Component;
 use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Controls\MultiChoiceControl;
 use Nette\Forms\Controls\RadioList;
 use Nette\Forms\Controls\SelectBox;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -65,6 +66,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
+
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
 			$component->setValue($this->accessor->getValue($entity, $name));
 			return TRUE;
@@ -74,8 +76,8 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
-		/** @var SelectBox|RadioList $component */
-		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems())) {
+		/** @var SelectBox|RadioList|MultiChoiceControl $component */
+		if (($component instanceof SelectBox || $component instanceof RadioList || $component instanceof MultiChoiceControl) && !count($component->getItems())) {
 			if (!$nameKey = $component->getOption(self::ITEMS_TITLE, FALSE)) {
 				$path = $component->lookupPath('Nette\Application\UI\Form');
 				throw new Kdyby\DoctrineForms\InvalidStateException(
@@ -89,12 +91,18 @@ class TextControl extends Nette\Object implements IComponentMapper
 
 			$related = $this->relatedMetadata($entity, $name);
 			$items = $this->findPairs($related, $criteria, $orderBy, $nameKey);
+
 			$component->setItems($items);
 		}
 
 		if ($relation = $this->accessor->getValue($entity, $name)) {
-			$UoW = $this->em->getUnitOfWork();
-			$component->setValue($UoW->getSingleIdentifierValue($relation));
+			if (is_array($relation)) {
+				$component->setDefaultValue(array_keys($relation));
+
+			} else {
+				$UoW = $this->em->getUnitOfWork();
+				$component->setDefaultValue($UoW->getSingleIdentifierValue($relation));
+			}
 		}
 
 		return TRUE;
@@ -152,6 +160,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
+			$component->loadHttpData();
 			$this->accessor->setValue($entity, $name, $component->getValue());
 			return TRUE;
 		}
@@ -164,8 +173,26 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
-		$repository = $this->em->getRepository($this->relatedMetadata($entity, $name)->getName());
-		if ($relation = $repository->find($identifier)) {
+		$entityClass = $this->relatedMetadata($entity, $name)->getName();
+		$repository = $this->em->getRepository($entityClass);
+
+		if (is_array($identifier)) {
+			$property = substr($name, 0, -1);
+			foreach ($repository->findAll() as $associatedEntity) {
+				if (in_array($associatedEntity->id, $identifier)) {
+					$hasMethod = 'has' . ucfirst($property);
+					if (!$entity->$hasMethod($associatedEntity)) {
+						$addMethod = 'add' . ucfirst($property);
+						$entity->$addMethod($associatedEntity);
+					}
+
+				} else {
+					$removeMethod = 'remove' . ucfirst($property);
+					$entity->$removeMethod($associatedEntity);
+				}
+			}
+
+		} elseif ($relation = $repository->find($identifier)) {
 			$meta->setFieldValue($entity, $name, $relation);
 		}
 
