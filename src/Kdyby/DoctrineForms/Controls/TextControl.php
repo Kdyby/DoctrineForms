@@ -94,7 +94,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($relation = $this->accessor->getValue($entity, $name)) {
-			if (is_array($relation)) {
+			if ($meta->hasAssociation($name) && $meta->isCollectionValuedAssociation($name)) {
 				$component->setDefaultValue(array_keys($relation));
 
 			} else {
