@@ -174,7 +174,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 		$entityClass = $this->relatedMetadata($entity, $name)->getName();
 		$repository = $this->em->getRepository($entityClass);
 
-		if (is_array($identifier)) {
+		if ($meta->hasAssociation($name) && $meta->isCollectionValuedAssociation($name)) {
 			$property = substr($name, 0, -1);
 			foreach ($repository->findAll() as $associatedEntity) {
 				if (in_array($associatedEntity->id, $identifier)) {
