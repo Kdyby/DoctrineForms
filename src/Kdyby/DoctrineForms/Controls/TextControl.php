@@ -15,6 +15,7 @@ use Kdyby;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Kdyby\DoctrineForms\IComponentMapper;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\PersistentCollection;
 use Nette;
 use Nette\ComponentModel\Component;
 use Nette\Forms\Controls\BaseControl;
@@ -94,9 +95,10 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($meta->hasAssociation($name) && $meta->isCollectionValuedAssociation($name)) {
-			if ($relation = $this->accessor->getValue($entity, $name)) {
-				$values = [];
-				foreach ($relation as $value) {
+			$collection = $meta->getFieldValue($entity, $name);
+			if ($collection instanceof PersistentCollection) {
+				$values = array();
+				foreach ($collection as $value) {
 					$values[] = $value->getId();
 				}
 				$component->setDefaultValue($values);
