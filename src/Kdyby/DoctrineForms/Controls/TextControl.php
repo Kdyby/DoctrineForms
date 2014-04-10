@@ -94,7 +94,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 			$component->setItems($items);
 		}
 
-		if ($meta->hasAssociation($name) && $meta->isCollectionValuedAssociation($name)) {
+		if ($meta->isCollectionValuedAssociation($name)) {
 			$collection = $meta->getFieldValue($entity, $name);
 			if ($collection instanceof PersistentCollection) {
 				$values = array();
@@ -173,14 +173,15 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
-		if (!$identifier = $component->getValue()) {
+		$identifier = $component->getValue();
+		if (!$identifier && !is_array($identifier)) {
 			return FALSE;
 		}
 
 		$entityClass = $this->relatedMetadata($entity, $name)->getName();
 		$repository = $this->em->getRepository($entityClass);
 
-		if ($meta->hasAssociation($name) && $meta->isCollectionValuedAssociation($name)) {
+		if ($meta->isCollectionValuedAssociation($name)) {
 			$property = substr($name, 0, -1);
 			foreach ($repository->findAll() as $associatedEntity) {
 				if (in_array($associatedEntity->id, $identifier)) {
