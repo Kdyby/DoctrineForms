@@ -17,7 +17,8 @@
 		"issues": "https://github.com/Kdyby/DoctrineForms/issues"
 	},
 	"require": {
-		"nette/nette": "~2.1@dev",
+		"nette/di": "~2.2@dev",
+		"nette/forms": "~2.2@dev",
 
 		"doctrine/orm": "~2.4",
 		"kdyby/annotations": "~2.0@dev",
@@ -25,6 +26,10 @@
 		"symfony/property-access": "~2.3"
 	},
 	"require-dev": {
+		"nette/nette": "~2.2@dev",
+		"nette/bootstrap": "~2.2@dev",
+		"nette/neon": "~2.2@dev",
+
 		"kdyby/doctrine": "~1.1@dev",
 		"nette/tester": "@dev",
 		"jakub-onderka/php-parallel-lint": "~0.6"
