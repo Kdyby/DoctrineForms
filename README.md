@@ -3,7 +3,7 @@ Kdyby/DoctrineForms
 
 [![Build Status](https://travis-ci.org/Kdyby/DoctrineForms.svg?branch=master)](https://travis-ci.org/Kdyby/DoctrineForms)
 [![Downloads this Month](https://img.shields.io/packagist/dm/Kdyby/DoctrineForms.svg)](https://packagist.org/packages/Kdyby/DoctrineForms)
-[![Latest stable](img.shields.io/packagist/v/Kdyby/DoctrineForms.svg)](https://packagist.org/packages/Kdyby/DoctrineForms)
+[![Latest stable](https://img.shields.io/packagist/v/Kdyby/DoctrineForms.svg)](https://packagist.org/packages/Kdyby/DoctrineForms)
 
 
 Requirements
