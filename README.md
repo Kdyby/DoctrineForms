@@ -38,7 +38,7 @@ $ composer update
 Documentation
 ------------
 
-Lear more in the [documentation](https://github.com/Kdyby/DoctrineForms/blob/nette-2.1/docs/en/index.md).
+Learn more in the [documentation](https://github.com/Kdyby/DoctrineForms/blob/nette-2.1/docs/en/index.md).
 
 
 -----
