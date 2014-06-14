@@ -38,7 +38,7 @@ $ composer update
 Documentation
 ------------
 
-Lear more in the [documentation](https://github.com/Kdyby/DoctrineForms/blob/master/docs/en/index.md).
+Learn more in the [documentation](https://github.com/Kdyby/DoctrineForms/blob/master/docs/en/index.md).
 
 
 -----
