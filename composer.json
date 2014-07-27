@@ -50,7 +50,7 @@
 
 		"kdyby/doctrine": "~1.1@dev",
 		"nette/tester": "@dev",
-		"jakub-onderka/php-parallel-lint": "dev-master#f3c25d3aced13"
+		"jakub-onderka/php-parallel-lint": "~0.7"
 	},
 	"suggest": {
 		"kdyby/doctrine": "A powerful integration of Doctrine ORM into Nette Framework"
