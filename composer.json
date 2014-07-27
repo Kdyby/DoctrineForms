@@ -27,7 +27,7 @@
 	"require-dev": {
 		"kdyby/doctrine": "~1.1@dev",
 		"nette/tester": "@dev",
-		"jakub-onderka/php-parallel-lint": "~0.6"
+		"jakub-onderka/php-parallel-lint": "~0.7"
 	},
 	"suggest": {
 		"kdyby/doctrine": "A powerful integration of Doctrine ORM into Nette Framework"
