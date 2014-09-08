@@ -52,6 +52,7 @@ you can also enable the extension using your neon config
 
 ```yml
 extensions:
+	translation: Kdyby\Translation\DI\TranslationExtension
 	events: Kdyby\Events\DI\EventsExtension
 	console: Kdyby\Console\DI\ConsoleExtension
 	annotations: Kdyby\Annotations\DI\AnnotationsExtension
