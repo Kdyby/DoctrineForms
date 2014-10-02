@@ -21,11 +21,11 @@
 
 		"doctrine/orm": "~2.4",
 		"kdyby/annotations": "~2.0@dev",
-		"kdyby/validator": "@dev",
+		"kdyby/validator": "~0.2@dev",
 		"symfony/property-access": "~2.3"
 	},
 	"require-dev": {
-		"kdyby/doctrine": "~1.1@dev",
+		"kdyby/doctrine": "~2.1@dev",
 		"nette/tester": "@dev",
 		"jakub-onderka/php-parallel-lint": "~0.7"
 	},
