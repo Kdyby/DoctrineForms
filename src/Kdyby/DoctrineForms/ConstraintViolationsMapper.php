@@ -18,7 +18,7 @@ use Nette\Forms\Container;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
-use Symfony\Component\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 
@@ -29,7 +29,7 @@ class ConstraintViolationsMapper extends Nette\Object
 {
 
 	/**
-	 * @var \Symfony\Component\Validator\ValidatorInterface
+	 * @var \Symfony\Component\Validator\Validator\ValidatorInterface
 	 */
 	private $validator;
 
