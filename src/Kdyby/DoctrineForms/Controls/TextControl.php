@@ -120,7 +120,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 	 * @param ClassMetadata $meta
 	 * @param array $criteria
 	 * @param array $orderBy
-	 * @param string $nameKey
+	 * @param string|callable $nameKey
 	 * @return array
 	 */
 	private function findPairs(ClassMetadata $meta, $criteria, $orderBy, $nameKey)
@@ -134,7 +134,9 @@ class TextControl extends Nette\Object implements IComponentMapper
 		$items = array();
 		$idKey = $meta->getSingleIdentifierFieldName();
 		foreach ($repository->findBy($criteria, $orderBy) as $entity) {
-			$items[$this->accessor->getValue($entity, $idKey)] = $this->accessor->getValue($entity, $nameKey);
+			$items[$this->accessor->getValue($entity, $idKey)] = is_callable($nameKey)
+				? Nette\Utils\Callback::invoke($nameKey, $entity)
+				: $this->accessor->getValue($entity, $nameKey);
 		}
 
 		return $items;
