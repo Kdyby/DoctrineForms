@@ -37,8 +37,8 @@ class ConstraintViolationsMapperTest extends ORMTestCase
 	{
 		$em = $this->createMemoryManager();
 
-		/** @var \Symfony\Component\Validator\ValidatorInterface $validator */
-		$validator = $this->serviceLocator->getByType('Symfony\Component\Validator\ValidatorInterface');
+		/** @var \Symfony\Component\Validator\Validator\ValidatorInterface $validator */
+		$validator = $this->serviceLocator->getByType('Symfony\Component\Validator\Validator\ValidatorInterface');
 
 		/** @var \Kdyby\Translation\Translator $translator */
 		$translator = $this->serviceLocator->getByType('Kdyby\Translation\Translator');

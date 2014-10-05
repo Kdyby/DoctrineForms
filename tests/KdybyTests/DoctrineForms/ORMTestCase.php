@@ -92,8 +92,10 @@ abstract class ORMTestCase extends Tester\TestCase
 			$request = new Nette\Application\Request('fake', 'POST', array());
 		}
 
+		$presenter->onStart[] = function ($presenter) use ($form) {
+			$presenter['form'] = $form;
+		};
 		$presenter->run($request);
-		$presenter['form'] = $form;
 
 		return $presenter;
 	}
@@ -131,8 +133,12 @@ abstract class ORMTestCase extends Tester\TestCase
 class PresenterMock extends UI\Presenter
 {
 
+	public $onStart = array();
+
 	protected function startup()
 	{
+		$this->onStart($this);
+		$this->processSignal();
 		$this->terminate();
 	}
 
