@@ -109,7 +109,26 @@ class EntityFormMapperTest extends ORMTestCase
 
 
 
-	public function testRelation_toOne_itemsLoad()
+	public function getRelation_toOne_itemsLoadDataProvider()
+	{
+		return array(
+			array(
+				'name'
+			),
+			array(
+				function (CmsUser $user) {
+					return $user->name;
+				},
+			),
+		);
+	}
+
+
+
+	/**
+	 * @dataProvider getRelation_toOne_itemsLoadDataProvider
+	 */
+	public function testRelation_toOne_itemsLoad($itemsTitle)
 	{
 		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
 		$em = $this->mapper->getEntityManager();
@@ -123,7 +142,7 @@ class EntityFormMapperTest extends ORMTestCase
 
 		$form->addText('topic');
 		$author = $form->addSelect('user')
-			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
+			->setOption(IComponentMapper::ITEMS_TITLE, $itemsTitle);
 
 		$article = new CmsArticle('Nette');
 		$form->bindEntity($article);

@@ -127,7 +127,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 	{
 		$repository = $this->em->getRepository($meta->getName());
 
-		if ($repository instanceof Kdyby\Doctrine\EntityDao) {
+		if ($repository instanceof Kdyby\Doctrine\EntityDao && !is_callable($nameKey)) {
 			return $repository->findPairs($criteria, $nameKey, $orderBy);
 		}
 
