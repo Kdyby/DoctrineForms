@@ -132,21 +132,23 @@ class TextControl extends Nette\Object implements IComponentMapper
 	 * @param ClassMetadata $meta
 	 * @param array $criteria
 	 * @param array $orderBy
-	 * @param string $nameKey
+	 * @param string|callable $nameKey
 	 * @return array
 	 */
 	private function findPairs(ClassMetadata $meta, $criteria, $orderBy, $nameKey)
 	{
 		$repository = $this->em->getRepository($meta->getName());
 
-		if ($repository instanceof Kdyby\Doctrine\EntityDao) {
+		if ($repository instanceof Kdyby\Doctrine\EntityDao && !is_callable($nameKey)) {
 			return $repository->findPairs($criteria, $nameKey, $orderBy);
 		}
 
 		$items = array();
 		$idKey = $meta->getSingleIdentifierFieldName();
 		foreach ($repository->findBy($criteria, $orderBy) as $entity) {
-			$items[$this->accessor->getValue($entity, $idKey)] = $this->accessor->getValue($entity, $nameKey);
+			$items[$this->accessor->getValue($entity, $idKey)] = is_callable($nameKey)
+				? Nette\Utils\Callback::invoke($nameKey, $entity)
+				: $this->accessor->getValue($entity, $nameKey);
 		}
 
 		return $items;
