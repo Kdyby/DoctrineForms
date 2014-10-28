@@ -137,7 +137,7 @@ class AddressEntityControl extends UI\Control
 	 */
 	protected function createComponentForm()
 	{
-		$form = new AddressEntityForm;
+		$form = ORMTestCase::buildEntityForm();
 		$form->addText('city');
 		$form->addSubmit('send');
 		$form->onSuccess[] = $this->processForm;
@@ -155,14 +155,6 @@ class AddressEntityControl extends UI\Control
 	{
 		return $this->submitResult;
 	}
-
-}
-
-
-
-class AddressEntityForm extends UI\Form
-{
-	use EntityForm;
 
 }
 

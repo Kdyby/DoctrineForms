@@ -105,7 +105,7 @@ abstract class ORMTestCase extends Tester\TestCase
 	/**
 	 * @return UI\Form|Kdyby\DoctrineForms\EntityForm
 	 */
-	protected static function buildEntityForm()
+	public static function buildEntityForm()
 	{
 		$class = __NAMESPACE__ . '\\EntityForm';
 		if (class_exists($class, FALSE)) {
