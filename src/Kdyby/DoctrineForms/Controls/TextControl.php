@@ -18,8 +18,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Nette;
 use Nette\ComponentModel\Component;
 use Nette\Forms\Controls\BaseControl;
-use Nette\Forms\Controls\RadioList;
-use Nette\Forms\Controls\SelectBox;
+use Nette\Forms\Controls\ChoiceControl;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 
@@ -74,8 +73,8 @@ class TextControl extends Nette\Object implements IComponentMapper
 			return FALSE;
 		}
 
-		/** @var SelectBox|RadioList $component */
-		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems())) {
+		/** @var ChoiceControl $component */
+		if ($component instanceof ChoiceControl && !count($component->getItems())) {
 			if (!$nameKey = $component->getOption(self::ITEMS_TITLE, FALSE)) {
 				$path = $component->lookupPath('Nette\Application\UI\Form');
 				throw new Kdyby\DoctrineForms\InvalidStateException(
