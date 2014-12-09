@@ -87,6 +87,7 @@ class ToMany extends Nette\Object implements IComponentMapper
 		}
 
 		$em = $this->mapper->getEntityManager();
+		$UoW = $em->getUnitOfWork();
 		$class = $meta->getAssociationTargetClass($component->getName());
 		$relationMeta = $em->getClassMetadata($class);
 
@@ -95,7 +96,11 @@ class ToMany extends Nette\Object implements IComponentMapper
 			$isNew = substr($container->getName(), 0, strlen(ToManyContainer::NEW_PREFIX)) === ToManyContainer::NEW_PREFIX;
 			$name = $isNew ? substr($container->getName(), strlen(ToManyContainer::NEW_PREFIX)) : $container->getName();
 
-			if (!$relation = $collection->get($name)) { // entity was added from the client
+			$relation = $collection->filter(function ($entity) use ($UoW, $name) {
+				return $UoW->getSingleIdentifierValue($entity) == $name; // intentionally ==
+			})->first();
+
+			if (!$relation) { // entity was added from the client
 				if (!$component->isAllowedRemove()) {
 					continue;
 				}
