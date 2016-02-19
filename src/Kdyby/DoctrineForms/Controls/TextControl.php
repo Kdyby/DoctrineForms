@@ -75,7 +75,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		/** @var SelectBox|RadioList $component */
-		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems())) {
+		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems()) && !$component->getOption(self::FIELD_NOT_LOAD, false)) {
 			if (!$nameKey = $component->getOption(self::ITEMS_TITLE, FALSE)) {
 				$path = $component->lookupPath('Nette\Application\UI\Form');
 				throw new Kdyby\DoctrineForms\InvalidStateException(

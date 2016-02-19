@@ -24,6 +24,7 @@ interface IComponentMapper
 {
 
 	const FIELD_NAME = 'field.name';
+	const FIELD_NOT_LOAD = 'field.notLoad';
 	const ITEMS_TITLE = 'items.title';
 	const ITEMS_FILTER = 'items.filter';
 	const ITEMS_ORDER = 'items.order';
