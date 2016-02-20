@@ -154,7 +154,9 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
-			$this->accessor->setValue($entity, $name, $component->getValue());
+			if(!$component->getOption(self::FIELD_NOT_SAVE, false)){
+				$this->accessor->setValue($entity, $name, $component->getValue());
+			}
 			return TRUE;
 		}
 
