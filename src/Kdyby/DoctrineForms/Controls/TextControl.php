@@ -75,7 +75,7 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		/** @var SelectBox|RadioList $component */
-		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems())) {
+		if (($component instanceof SelectBox || $component instanceof RadioList) && !count($component->getItems()) && !$component->getOption(self::FIELD_NOT_LOAD, false)) {
 			if (!$nameKey = $component->getOption(self::ITEMS_TITLE, FALSE)) {
 				$path = $component->lookupPath('Nette\Application\UI\Form');
 				throw new Kdyby\DoctrineForms\InvalidStateException(
@@ -154,7 +154,9 @@ class TextControl extends Nette\Object implements IComponentMapper
 		}
 
 		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
-			$this->accessor->setValue($entity, $name, $component->getValue());
+			if(!$component->getOption(self::FIELD_NOT_SAVE, false)){
+				$this->accessor->setValue($entity, $name, $component->getValue());
+			}
 			return TRUE;
 		}
 
