@@ -60,7 +60,7 @@ class ToMany extends Nette\Object implements IComponentMapper
 
 		$component->bindCollection($entity, $collection);
 		foreach ($collection as $relation) {
-			if ($id = $UoW->getSingleIdentifierValue($entity)) {
+			if ($id = $UoW->getSingleIdentifierValue($relation)) {
 				$this->mapper->load($relation, $component[$id]);
 				continue;
 			}
