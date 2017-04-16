@@ -29,7 +29,7 @@ class ConstraintViolationsMapper extends Nette\Object
 {
 
 	/**
-	 * @var \Symfony\Component\Validator\ValidatorInterface
+	 * @var \Symfony\Component\Validator\Validator\ValidatorInterface
 	 */
 	private $validator;
 
