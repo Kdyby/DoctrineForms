@@ -180,13 +180,27 @@ class EntityFormMapperTest extends ORMTestCase
 
 		Assert::same('Doctrine', $doctrineContainer['topic']->value);
 		Assert::same('Nette', $netteContainer['topic']->value);
+	}
+
+
+
+	/**
+	 * @throws Kdyby\DoctrineForms\NotImplementedException
+	 */
+	public function testRelation_toManyNotImplemented()
+	{
+		$form = self::buildEntityForm()->injectEntityMapper($this->mapper);
+		/** @var Kdyby\DoctrineForms\ToManyContainer $articlesContainer */
+		$form->toMany('articles', function (Nette\Forms\Container $article) {
+			$article->addText('topic');
+		});
+		$entity = new CmsUser('Robot');
+		$entity->addArticle(new CmsArticle('Doctrine'));
+		$entity->addArticle(new CmsArticle('Nette'));
+
+		$form->bindEntity($entity);
 
 		$this->attachToPresenter($form, array('name' => 'Human', 'articles' => array('_new_0' => array('topic' => 'Dibi'), '_new_1' => array('topic' => 'Zend'))));
-
-		list($first, $second) = $entity->articles->toArray();
-		Assert::same('Human', $entity->name);
-		Assert::same('Dibi', $first->topic);
-		Assert::same('Zend', $second->topic);
 	}
 
 
