@@ -260,7 +260,9 @@ class EntityBuilder extends Nette\Object
 		$control = $this->controlFactory->create($this->getMetadata(), $mapping);
 		$this->container->addComponent($control, $name);
 
-		$this->mapper->load($this->entity, $control);
+		if ($this->entity) {
+			$this->mapper->load($this->entity, $control);
+		}
 
 		return $control;
 	}
